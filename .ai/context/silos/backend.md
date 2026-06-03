@@ -34,3 +34,7 @@ Scaffolded by T001. Stack locked in [ADR 0003](../../decisions/0003-product-conc
 2. Put pure logic in `src/services/`. Routes are thin.
 3. Follow [.ai/patterns/coding-standards.md](../../patterns/coding-standards.md).
 4. If introducing a new pattern/library, write an ADR.
+
+## Dev environment gotchas
+- Use Node 22 LTS (`.nvmrc`). better-sqlite3 has no prebuilt binary for Node 24 — see [ADR 0004](../../decisions/0004-pin-node-22-lts.md).
+- If `pnpm` is missing after `nvm use`, run `corepack prepare pnpm@10.32.1 --activate` (export `COREPACK_ENABLE_DOWNLOAD_PROMPT=0` first to skip the interactive Y/n).

@@ -23,3 +23,6 @@
 ## AI-authored code
 - Don't add files or abstractions "for future use".
 - Don't add validation, error handling, or fallbacks for scenarios that can't happen.
+
+## Environment & module loading
+- Read env vars **inside functions**, not at module top-level. ES module imports are hoisted, so `process.env.X = ...` set in a test file runs *after* a top-level `const X = process.env.X` in the imported module — silently using the wrong value (e.g. the real DB instead of `:memory:`).

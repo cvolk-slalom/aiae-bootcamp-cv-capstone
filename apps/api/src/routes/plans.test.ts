@@ -1,0 +1,106 @@
+import { describe, it, expect, afterAll } from 'vitest';
+import { buildServer } from '../server.js';
+
+process.env.DB_PATH = ':memory:';
+process.env.PLANTS_PATH = '../../data/plants.json';
+
+const { app } = await buildServer();
+afterAll(async () => {
+  await app.close();
+});
+
+describe('plans flow', () => {
+  it('creates, fetches, updates inputs, and lists', async () => {
+    const create = await app.inject({
+      method: 'POST',
+      url: '/plans',
+      payload: { name: 'My Bed' },
+    });
+    expect(create.statusCode).toBe(201);
+    const created = create.json();
+    expect(created.step).toBe('inputs');
+    expect(created.id).toBeTruthy();
+
+    const get = await app.inject({ method: 'GET', url: `/plans/${created.id}` });
+    expect(get.statusCode).toBe(200);
+    expect(get.json().name).toBe('My Bed');
+
+    const patch = await app.inject({
+      method: 'PATCH',
+      url: `/plans/${created.id}/inputs`,
+      payload: {
+        zone: '7a',
+        lastFrostDate: '2026-04-15',
+        bed: { widthIn: 48, lengthIn: 96 },
+        lightHours: 8,
+        desiredPlants: ['tomato', 'basil'],
+      },
+    });
+    expect(patch.statusCode).toBe(200);
+    expect(patch.json().step).toBe('companions');
+    expect(patch.json().inputs.desiredPlants).toEqual(['tomato', 'basil']);
+
+    const list = await app.inject({ method: 'GET', url: '/plans' });
+    expect(list.statusCode).toBe(200);
+    const summaries = list.json();
+    expect(summaries.length).toBeGreaterThanOrEqual(1);
+    expect(summaries[0].id).toBe(created.id);
+  });
+
+  it('rejects invalid inputs with 400 + field errors', async () => {
+    const create = await app.inject({
+      method: 'POST',
+      url: '/plans',
+      payload: { name: 'Bad' },
+    });
+    const id = create.json().id;
+
+    const patch = await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/inputs`,
+      payload: {
+        zone: '',
+        lastFrostDate: '2026-04-15',
+        bed: { widthIn: -10, lengthIn: 96 },
+        lightHours: 50,
+        desiredPlants: [],
+      },
+    });
+    expect(patch.statusCode).toBe(400);
+    expect(patch.json().errors).toBeTruthy();
+  });
+
+  it('rejects unknown plant ids', async () => {
+    const create = await app.inject({
+      method: 'POST',
+      url: '/plans',
+      payload: { name: 'X' },
+    });
+    const id = create.json().id;
+    const patch = await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/inputs`,
+      payload: {
+        zone: '6b',
+        lastFrostDate: '2026-04-15',
+        bed: { widthIn: 48, lengthIn: 48 },
+        lightHours: 6,
+        desiredPlants: ['not-a-plant'],
+      },
+    });
+    expect(patch.statusCode).toBe(400);
+  });
+
+  it('404s for missing plan', async () => {
+    const res = await app.inject({ method: 'GET', url: '/plans/nope' });
+    expect(res.statusCode).toBe(404);
+  });
+});
+
+describe('plants', () => {
+  it('returns the seeded list', async () => {
+    const res = await app.inject({ method: 'GET', url: '/plants' });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().length).toBeGreaterThanOrEqual(20);
+  });
+});

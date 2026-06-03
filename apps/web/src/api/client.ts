@@ -1,14 +1,57 @@
-import { HealthResponseSchema, type HealthResponse } from '@gpb/shared';
+import {
+  HealthResponseSchema,
+  PlanResponseSchema,
+  PlanListResponseSchema,
+  PlantListResponseSchema,
+  type HealthResponse,
+  type PlanResponse,
+  type PlanListResponse,
+  type PlantListResponse,
+  type CreatePlanRequest,
+  type UpdateInputsRequest,
+} from '@gpb/shared';
 
 const BASE = import.meta.env.VITE_API_BASE ?? '/api';
 
-async function request<T>(path: string, schema: { parse: (v: unknown) => T }): Promise<T> {
-  const res = await fetch(`${BASE}${path}`);
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-  const json = await res.json();
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+    public readonly body: unknown,
+  ) {
+    super(message);
+  }
+}
+
+async function request<T>(
+  method: string,
+  path: string,
+  schema: { parse: (v: unknown) => T },
+  body?: unknown,
+): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method,
+    headers: body !== undefined ? { 'content-type': 'application/json' } : undefined,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+  const text = await res.text();
+  const json = text ? JSON.parse(text) : undefined;
+  if (!res.ok) throw new ApiError(`${res.status} ${res.statusText}`, res.status, json);
   return schema.parse(json);
 }
 
+export const api = {
+  getHealth: (): Promise<HealthResponse> => request('GET', '/health', HealthResponseSchema),
+  listPlans: (): Promise<PlanListResponse> => request('GET', '/plans', PlanListResponseSchema),
+  createPlan: (body: CreatePlanRequest): Promise<PlanResponse> =>
+    request('POST', '/plans', PlanResponseSchema, body),
+  getPlan: (id: string): Promise<PlanResponse> =>
+    request('GET', `/plans/${encodeURIComponent(id)}`, PlanResponseSchema),
+  updateInputs: (id: string, body: UpdateInputsRequest): Promise<PlanResponse> =>
+    request('PATCH', `/plans/${encodeURIComponent(id)}/inputs`, PlanResponseSchema, body),
+  listPlants: (): Promise<PlantListResponse> => request('GET', '/plants', PlantListResponseSchema),
+};
+
 export function getHealth(): Promise<HealthResponse> {
-  return request('/health', HealthResponseSchema);
+  return api.getHealth();
 }

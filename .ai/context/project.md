@@ -24,4 +24,4 @@ Full MVP definition: [.ai/requirements/mvp.md](../requirements/mvp.md).
 - **Builders:** AI agents (Copilot, Claude, Codex) following [.ai/workflows/](../workflows/).
 
 ## Current status
-T001 done — monorepo scaffold runs (`pnpm dev` → web on 5173 + api on 3001 with `/health`). **Next:** F003 — Inputs + Plan persistence.
+F003 done — Plan CRUD + Inputs form persist across reloads. **Next:** F004 — Companion recommender.

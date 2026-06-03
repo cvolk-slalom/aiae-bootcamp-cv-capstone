@@ -1,23 +1,25 @@
-import { useEffect, useState } from 'react';
-import { getHealth } from './api/client.js';
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import { HomeScreen } from './screens/Home/Home.js';
+import { InputsScreen } from './screens/Inputs/Inputs.js';
+import { CompanionsPlaceholder } from './screens/Companions/Companions.js';
 import styles from './App.module.css';
 
-type Status = 'loading' | 'ok' | 'error';
-
 export function App() {
-  const [status, setStatus] = useState<Status>('loading');
-
-  useEffect(() => {
-    getHealth()
-      .then(() => setStatus('ok'))
-      .catch(() => setStatus('error'));
-  }, []);
-
   return (
-    <main className={styles.main}>
-      <h1>Garden Plan Builder</h1>
-      <p>Scaffold ready. Wizard coming soon.</p>
-      <p>API health: <strong data-testid="health">{status}</strong></p>
-    </main>
+    <BrowserRouter>
+      <main className={styles.main}>
+        <header className={styles.header}>
+          <h1>
+            <Link to="/">Garden Plan Builder</Link>
+          </h1>
+        </header>
+        <Routes>
+          <Route path="/" element={<HomeScreen />} />
+          <Route path="/plans/:id/inputs" element={<InputsScreen />} />
+          <Route path="/plans/:id/companions" element={<CompanionsPlaceholder />} />
+          <Route path="*" element={<p>Not found.</p>} />
+        </Routes>
+      </main>
+    </BrowserRouter>
   );
 }

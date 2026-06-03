@@ -4,7 +4,7 @@ import { buildServer } from './server.js';
 process.env.DB_PATH = ':memory:';
 process.env.PLANTS_PATH = '../../data/plants.json';
 
-const app = await buildServer();
+const { app } = await buildServer();
 afterAll(async () => {
   await app.close();
 });
