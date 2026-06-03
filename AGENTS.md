@@ -21,6 +21,7 @@ A demo project being built with an **AI-first SDLC**. The product code does not 
 | Find relevant code/context | [.ai/workflows/context-discovery.md](.ai/workflows/context-discovery.md) |
 | Make a non-trivial design choice | [.ai/workflows/record-decision.md](.ai/workflows/record-decision.md) |
 | End of meaningful work session | [.ai/workflows/update-journal.md](.ai/workflows/update-journal.md) |
+| Commit & push completed work | [.ai/workflows/commit-and-push.md](.ai/workflows/commit-and-push.md) |
 | Add/refine a requirement | [.ai/requirements/README.md](.ai/requirements/README.md) |
 
 ## Hard rules (do not violate)
@@ -28,8 +29,9 @@ A demo project being built with an **AI-first SDLC**. The product code does not 
 2. **Log decisions.** Any choice that affects architecture, dependencies, or conventions → new ADR in `.ai/decisions/`.
 3. **Journal at session end.** Append a dated entry in `.ai/journal/` summarizing what changed and why.
 4. **Update context when you change it.** If you change tech, conventions, or structure, update the matching `.ai/context/` file in the same change.
-5. **Lightweight > complete.** Prefer terse bullets over prose. If a doc grows past ~150 lines, split it.
-6. **No clarifying questions** if the answer is in `.ai/`. If it isn't, add it after the user answers.
+5. **Commit & push on completion.** When a feature/task is done (or a standalone meta change lands), run `scripts/ai-commit.sh` per [.ai/workflows/commit-and-push.md](.ai/workflows/commit-and-push.md). One commit per completed unit. Never `--force` push.
+6. **Lightweight > complete.** Prefer terse bullets over prose. If a doc grows past ~150 lines, split it.
+7. **No clarifying questions** if the answer is in `.ai/`. If it isn't, add it after the user answers.
 
 ## Repo map
 - `.ai/` — AI-SDLC scaffolding (this is the meta-layer)

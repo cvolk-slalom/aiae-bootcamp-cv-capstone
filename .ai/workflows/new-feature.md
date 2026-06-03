@@ -13,7 +13,9 @@ Use this when the user asks for a new feature or non-trivial change.
 7. **Update context.** If you changed structure, conventions, or stack: edit the matching `.ai/context/` files in the same change.
 8. **Mark backlog `done`.** Update [.ai/requirements/backlog.md](../requirements/backlog.md) and link the brief.
 9. **Journal it.** Follow [update-journal.md](update-journal.md).
+10. **Commit & push.** Follow [commit-and-push.md](commit-and-push.md). One commit per completed unit of work.
 
 ## When to skip steps
-- Trivial fix (typo, one-line tweak): skip 2, 3, 9. Just do it.
+- Trivial fix (typo, one-line tweak): skip 2, 3, 9. Step 10 still runs.
 - Pure refactor with no behavior change: skip 3, but write an ADR if patterns change.
+- Work-in-progress save: skip 10 unless the user asks to checkpoint.

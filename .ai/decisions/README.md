@@ -17,5 +17,6 @@ See [template.md](template.md). Copy it, increment the number, fill in.
 | # | Title | Status |
 |---|---|---|
 | [0001](0001-ai-sdlc-architecture.md) | AI-SDLC scaffolding & conventions | Accepted |
+| [0002](0002-auto-commit-on-completion.md) | Auto-commit & push on task completion | Accepted |
 
 > Update this table when you add an ADR.
