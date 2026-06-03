@@ -3,10 +3,12 @@ import { z } from 'zod';
 import {
   CreatePlanRequestSchema,
   UpdateInputsRequestSchema,
+  UpdateCompanionsRequestSchema,
   newId,
   type Plan,
 } from '@gpb/shared';
 import { PlansRepo } from '../db/plans-repo.js';
+import { buildCompanionsResult } from '../services/companions.js';
 
 const ParamsSchema = z.object({ id: z.string().min(1) });
 
@@ -57,6 +59,49 @@ export const plansRoutes: FastifyPluginAsync = async (app) => {
       ...existing,
       inputs: parsed.data,
       step: 'companions',
+      updatedAt: new Date().toISOString(),
+    };
+    repo.update(updated);
+    return updated;
+  });
+
+  app.get('/plans/:id/companions/recommendations', async (req, reply) => {
+    const { id } = ParamsSchema.parse(req.params);
+    const plan = repo.get(id);
+    if (!plan) return reply.code(404).send({ error: 'not found' });
+    if (!plan.inputs) {
+      return reply.code(400).send({ errors: { formErrors: ['inputs not set'], fieldErrors: {} } });
+    }
+    return buildCompanionsResult(plan.inputs.desiredPlants, app.plants);
+  });
+
+  app.patch('/plans/:id/companions', async (req, reply) => {
+    const { id } = ParamsSchema.parse(req.params);
+    const parsed = UpdateCompanionsRequestSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ errors: parsed.error.flatten() });
+
+    const unknown = parsed.data.confirmedPlants.filter((pid) => !app.plants.has(pid));
+    if (unknown.length > 0) {
+      return reply
+        .code(400)
+        .send({ errors: { formErrors: [`unknown plant id(s): ${unknown.join(', ')}`], fieldErrors: {} } });
+    }
+
+    const existing = repo.get(id);
+    if (!existing) return reply.code(404).send({ error: 'not found' });
+    if (!existing.inputs) {
+      return reply.code(400).send({ errors: { formErrors: ['inputs not set'], fieldErrors: {} } });
+    }
+
+    const result = buildCompanionsResult(existing.inputs.desiredPlants, app.plants);
+    const updated: Plan = {
+      ...existing,
+      companions: {
+        recommended: result.recommended,
+        discouraged: result.discouraged,
+        confirmedPlants: parsed.data.confirmedPlants,
+      },
+      step: 'layout',
       updatedAt: new Date().toISOString(),
     };
     repo.update(updated);

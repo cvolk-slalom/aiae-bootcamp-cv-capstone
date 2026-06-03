@@ -24,4 +24,4 @@ Full MVP definition: [.ai/requirements/mvp.md](../requirements/mvp.md).
 - **Builders:** AI agents (Copilot, Claude, Codex) following [.ai/workflows/](../workflows/).
 
 ## Current status
-F003 done — Plan CRUD + Inputs form persist across reloads. **Next:** F004 — Companion recommender.
+F004 done — Companion recommender + confirmed-list persistence. **Next:** F005 — Layout.

@@ -35,3 +35,14 @@ export type PlanListResponse = z.infer<typeof PlanListResponseSchema>;
 
 export const PlantListResponseSchema = z.array(PlantSchema);
 export type PlantListResponse = z.infer<typeof PlantListResponseSchema>;
+
+export const CompanionsResultSchema = z.object({
+  recommended: z.array(z.string()),
+  discouraged: z.array(z.object({ a: z.string(), b: z.string(), reason: z.string() })),
+});
+export type CompanionsResult = z.infer<typeof CompanionsResultSchema>;
+
+export const UpdateCompanionsRequestSchema = z.object({
+  confirmedPlants: z.array(z.string()),
+});
+export type UpdateCompanionsRequest = z.infer<typeof UpdateCompanionsRequestSchema>;

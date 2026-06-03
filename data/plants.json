@@ -9,7 +9,7 @@
     "startIndoorsWeeksBeforeLastFrost": 6,
     "transplantWeeksAfterLastFrost": 2,
     "companions": ["basil", "carrot", "onion", "marigold", "nasturtium", "garlic"],
-    "antagonists": ["cabbage", "broccoli", "corn"]
+    "antagonists": ["cabbage", "broccoli", "corn", "fennel"]
   },
   {
     "id": "basil",
@@ -248,5 +248,16 @@
     "directSowWeeksRelativeToLastFrost": 1,
     "companions": ["cucumber", "zucchini", "squash-butternut", "tomato"],
     "antagonists": []
+  },
+  {
+    "id": "fennel",
+    "name": "Fennel",
+    "spacingIn": 12,
+    "sun": "full",
+    "daysToMaturity": 80,
+    "frostTolerance": "half-hardy",
+    "directSowWeeksRelativeToLastFrost": 2,
+    "companions": [],
+    "antagonists": ["tomato", "bean-bush"]
   }
 ]

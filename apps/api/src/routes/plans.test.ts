@@ -104,3 +104,59 @@ describe('plants', () => {
     expect(res.json().length).toBeGreaterThanOrEqual(20);
   });
 });
+
+describe('companions flow', () => {
+  async function seedPlanWithInputs(desired: string[]) {
+    const create = await app.inject({ method: 'POST', url: '/plans', payload: { name: 'C' } });
+    const id = create.json().id;
+    await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/inputs`,
+      payload: {
+        zone: '7a',
+        lastFrostDate: '2026-04-15',
+        bed: { widthIn: 48, lengthIn: 96 },
+        lightHours: 8,
+        desiredPlants: desired,
+      },
+    });
+    return id;
+  }
+
+  it('returns recommendations + discouraged for tomato/basil/fennel', async () => {
+    const id = await seedPlanWithInputs(['tomato', 'basil', 'fennel']);
+    const res = await app.inject({ method: 'GET', url: `/plans/${id}/companions/recommendations` });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(Array.isArray(body.recommended)).toBe(true);
+    expect(body.discouraged).toEqual([
+      expect.objectContaining({ a: 'fennel', b: 'tomato' }),
+    ]);
+  });
+
+  it('PATCH /companions persists confirmed list and advances step to layout', async () => {
+    const id = await seedPlanWithInputs(['tomato', 'basil']);
+    const res = await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/companions`,
+      payload: { confirmedPlants: ['tomato', 'basil', 'carrot'] },
+    });
+    expect(res.statusCode).toBe(200);
+    const plan = res.json();
+    expect(plan.step).toBe('layout');
+    expect(plan.companions.confirmedPlants).toEqual(['tomato', 'basil', 'carrot']);
+
+    const reload = await app.inject({ method: 'GET', url: `/plans/${id}` });
+    expect(reload.json().companions.confirmedPlants).toEqual(['tomato', 'basil', 'carrot']);
+  });
+
+  it('PATCH /companions rejects unknown plant ids with 400', async () => {
+    const id = await seedPlanWithInputs(['tomato']);
+    const res = await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/companions`,
+      payload: { confirmedPlants: ['tomato', 'not-a-plant'] },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+});

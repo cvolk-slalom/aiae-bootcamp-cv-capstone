@@ -1,0 +1,12 @@
+.section { display: flex; flex-direction: column; gap: 1.25rem; max-width: 720px; }
+.group { border: 1px solid #ddd; padding: 0.75rem 1rem; }
+.group h3 { margin-top: 0; font-size: 1rem; }
+.list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.muted { color: #666; font-size: 0.9rem; }
+.warn { color: #8a4b00; }
+.warn .row { background: #fff7e6; padding: 0.4rem 0.6rem; }
+.actions { display: flex; gap: 0.75rem; }
+.actions button { padding: 0.55rem 1rem; font-size: 1rem; cursor: pointer; }
+.smallBtn { padding: 0.2rem 0.6rem; font-size: 0.85rem; cursor: pointer; }
+.errors { color: #b00020; font-size: 0.9rem; padding-left: 1.25rem; }

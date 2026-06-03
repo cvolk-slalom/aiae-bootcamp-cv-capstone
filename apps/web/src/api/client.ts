@@ -3,12 +3,15 @@ import {
   PlanResponseSchema,
   PlanListResponseSchema,
   PlantListResponseSchema,
+  CompanionsResultSchema,
   type HealthResponse,
   type PlanResponse,
   type PlanListResponse,
   type PlantListResponse,
+  type CompanionsResult,
   type CreatePlanRequest,
   type UpdateInputsRequest,
+  type UpdateCompanionsRequest,
 } from '@gpb/shared';
 
 const BASE = import.meta.env.VITE_API_BASE ?? '/api';
@@ -49,6 +52,10 @@ export const api = {
     request('GET', `/plans/${encodeURIComponent(id)}`, PlanResponseSchema),
   updateInputs: (id: string, body: UpdateInputsRequest): Promise<PlanResponse> =>
     request('PATCH', `/plans/${encodeURIComponent(id)}/inputs`, PlanResponseSchema, body),
+  getCompanionsRecommendations: (id: string): Promise<CompanionsResult> =>
+    request('GET', `/plans/${encodeURIComponent(id)}/companions/recommendations`, CompanionsResultSchema),
+  updateCompanions: (id: string, body: UpdateCompanionsRequest): Promise<PlanResponse> =>
+    request('PATCH', `/plans/${encodeURIComponent(id)}/companions`, PlanResponseSchema, body),
   listPlants: (): Promise<PlantListResponse> => request('GET', '/plants', PlantListResponseSchema),
 };
 
