@@ -6,7 +6,7 @@
 | Order | ID | Title | Silo | Status | Brief |
 |------:|----|-------|------|--------|-------|
 | 1 | F001 | Pick demo product concept + stack | meta | done | [ADR 0003](../decisions/0003-product-concept-and-stack.md) |
-| 2 | T001 | Repo setup (pnpm workspaces, FE/BE/shared scaffolds, SQLite, plant data, dev loop) | meta, frontend, backend, shared | todo | [briefs/T001-repo-setup.md](briefs/T001-repo-setup.md) |
+| 2 | T001 | Repo setup (pnpm workspaces, FE/BE/shared scaffolds, SQLite, plant data, dev loop) | meta, frontend, backend, shared | done | [briefs/T001-repo-setup.md](briefs/T001-repo-setup.md) |
 | 3 | F003 | Step 1 — Inputs + Plan persistence (CRUD) | backend, shared, frontend | todo | [briefs/F003-inputs-and-persistence.md](briefs/F003-inputs-and-persistence.md) |
 | 4 | F004 | Step 2 — Companion recommender | backend, shared, frontend | todo | [briefs/F004-companion-recommender.md](briefs/F004-companion-recommender.md) |
 | 5 | F005 | Step 3 — Bed layout | backend, shared, frontend | todo | [briefs/F005-bed-layout.md](briefs/F005-bed-layout.md) |

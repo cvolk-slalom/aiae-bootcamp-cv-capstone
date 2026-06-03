@@ -12,7 +12,7 @@
 - **Shared:** TypeScript types + Zod schemas in `packages/shared`.
 - **Tooling:** pnpm workspaces, tsx (dev), vitest (tests), eslint + prettier.
 - **Plant data:** static `data/plants.json` (~20–30 entries).
-- **Runtime:** Dev container (Ubuntu 24.04). Node 20+, pnpm 9+.
+- **Runtime:** Dev container (Ubuntu 24.04). Node 22 LTS (pinned via `.nvmrc`), pnpm 10+.
 
 ## Silos
 The codebase is partitioned so agents can load only what they need.

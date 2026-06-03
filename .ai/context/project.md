@@ -16,7 +16,7 @@ Full MVP definition: [.ai/requirements/mvp.md](../requirements/mvp.md).
 
 ## Constraints
 - Lightweight stack — see [.ai/context/architecture.md](architecture.md) (Vite/React + Node/Fastify + SQLite).
-- Dev container is Ubuntu 24.04; Node 20+, pnpm 9+.
+- Dev container is Ubuntu 24.04; Node 22 LTS (see `.nvmrc`), pnpm 10+.
 - No secrets in repo. Use `.env.example` + env vars.
 
 ## Stakeholders
@@ -24,4 +24,4 @@ Full MVP definition: [.ai/requirements/mvp.md](../requirements/mvp.md).
 - **Builders:** AI agents (Copilot, Claude, Codex) following [.ai/workflows/](../workflows/).
 
 ## Current status
-Scaffolding + MVP defined. Stack locked in [ADR 0003](../decisions/0003-product-concept-and-stack.md). **Next:** T001 — repo setup. Then F003–F007.
+T001 done — monorepo scaffold runs (`pnpm dev` → web on 5173 + api on 3001 with `/health`). **Next:** F003 — Inputs + Plan persistence.
