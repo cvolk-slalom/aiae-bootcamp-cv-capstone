@@ -8,9 +8,11 @@ A demo project being built with an **AI-first SDLC**. The product code does not 
 ## How to orient in a fresh chat (token-cheap path)
 1. Read this file.
 2. Read [.ai/context/project.md](.ai/context/project.md) — goals + constraints.
-3. Read [.ai/context/architecture.md](.ai/context/architecture.md) — tech + silos.
-4. Load **only the silo(s)** relevant to the task: [.ai/context/silos/](.ai/context/silos/).
-5. Skim [.ai/decisions/README.md](.ai/decisions/README.md) for recent ADRs.
+3. Read [.ai/requirements/mvp.md](.ai/requirements/mvp.md) — the product north star.
+4. Read [.ai/context/architecture.md](.ai/context/architecture.md) — tech + silos.
+5. Load **only the silo(s)** relevant to the task: [.ai/context/silos/](.ai/context/silos/).
+6. Check [.ai/requirements/backlog.md](.ai/requirements/backlog.md) for the next task; open its brief.
+7. Skim [.ai/decisions/README.md](.ai/decisions/README.md) for recent ADRs.
 
 **Do not** load all of `.ai/` upfront. Use the workflows below to fetch only what you need.
 

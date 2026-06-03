@@ -18,5 +18,6 @@ See [template.md](template.md). Copy it, increment the number, fill in.
 |---|---|---|
 | [0001](0001-ai-sdlc-architecture.md) | AI-SDLC scaffolding & conventions | Accepted |
 | [0002](0002-auto-commit-on-completion.md) | Auto-commit & push on task completion | Accepted |
+| [0003](0003-product-concept-and-stack.md) | Product concept & stack — Garden Plan Builder | Accepted |
 
 > Update this table when you add an ADR.

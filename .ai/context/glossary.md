@@ -7,3 +7,9 @@
 - **ADR** — Architecture Decision Record. One file per non-trivial decision in `.ai/decisions/`.
 - **Journal entry** — dated session log in `.ai/journal/` summarizing what changed and why.
 - **Brief** — short per-feature requirement doc in `.ai/requirements/briefs/`.
+- **MVP doc** — [.ai/requirements/mvp.md](../requirements/mvp.md). The product north star; read when in doubt about scope.
+- **Plan** (product) — the persistent record produced by the wizard. Holds inputs, companions, layout, timing, final.
+- **Wizard step** — one of `inputs | companions | layout | timing | final`. State persists between steps.
+- **Companion** — a plant that benefits another when grown nearby.
+- **Antagonist** — a plant that harms another when grown nearby.
+- **Last-frost date** — anchor for all timing calculations (sow/transplant/harvest windows).
