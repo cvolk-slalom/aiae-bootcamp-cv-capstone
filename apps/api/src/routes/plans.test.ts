@@ -294,3 +294,66 @@ describe('timing flow', () => {
     expect(res.json().errors.formErrors.join(' ')).toMatch(/not-a-plant/);
   });
 });
+
+describe('final flow', () => {
+  async function seedFullPlan() {
+    const create = await app.inject({ method: 'POST', url: '/plans', payload: { name: 'Final Garden' } });
+    const id = create.json().id;
+    await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/inputs`,
+      payload: {
+        zone: '7a',
+        lastFrostDate: '2026-05-01',
+        bed: { widthIn: 48, lengthIn: 96 },
+        lightHours: 8,
+        desiredPlants: ['tomato', 'basil'],
+      },
+    });
+    await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/companions`,
+      payload: { confirmedPlants: ['tomato', 'basil'] },
+    });
+    const sug = await app.inject({ method: 'GET', url: `/plans/${id}/layout/suggestion` });
+    await app.inject({ method: 'PATCH', url: `/plans/${id}/layout`, payload: sug.json() });
+    const tsug = await app.inject({ method: 'GET', url: `/plans/${id}/timing/suggestion` });
+    await app.inject({ method: 'PATCH', url: `/plans/${id}/timing`, payload: tsug.json() });
+    return id;
+  }
+
+  it('POST /final renders, persists summaryMarkdown, and keeps step at final', async () => {
+    const id = await seedFullPlan();
+    const res = await app.inject({ method: 'POST', url: `/plans/${id}/final` });
+    expect(res.statusCode).toBe(200);
+    const plan = res.json();
+    expect(plan.step).toBe('final');
+    expect(plan.final.summaryMarkdown).toMatch(/^# Final Garden/);
+    expect(plan.final.summaryMarkdown).toContain('## Layout');
+    expect(plan.final.summaryMarkdown).toContain('| Tomato |');
+
+    const reload = await app.inject({ method: 'GET', url: `/plans/${id}` });
+    expect(reload.json().final.summaryMarkdown).toBe(plan.final.summaryMarkdown);
+  });
+
+  it('GET /final.md returns text/markdown', async () => {
+    const id = await seedFullPlan();
+    await app.inject({ method: 'POST', url: `/plans/${id}/final` });
+    const res = await app.inject({ method: 'GET', url: `/plans/${id}/final.md` });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toMatch(/text\/markdown/);
+    expect(res.body).toMatch(/^# Final Garden/);
+  });
+
+  it('GET /final.md renders on the fly if final not yet POSTed', async () => {
+    const id = await seedFullPlan();
+    const res = await app.inject({ method: 'GET', url: `/plans/${id}/final.md` });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toMatch(/^# Final Garden/);
+  });
+
+  it('POST /final 404s for missing plan', async () => {
+    const res = await app.inject({ method: 'POST', url: '/plans/nope/final' });
+    expect(res.statusCode).toBe(404);
+  });
+});

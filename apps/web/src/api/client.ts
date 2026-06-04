@@ -70,6 +70,9 @@ export const api = {
     request('GET', `/plans/${encodeURIComponent(id)}/timing/suggestion`, TimingResultSchema),
   updateTiming: (id: string, body: UpdateTimingRequest): Promise<PlanResponse> =>
     request('PATCH', `/plans/${encodeURIComponent(id)}/timing`, PlanResponseSchema, body),
+  renderFinal: (id: string): Promise<PlanResponse> =>
+    request('POST', `/plans/${encodeURIComponent(id)}/final`, PlanResponseSchema),
+  finalMarkdownUrl: (id: string): string => `${BASE}/plans/${encodeURIComponent(id)}/final.md`,
   listPlants: (): Promise<PlantListResponse> => request('GET', '/plants', PlantListResponseSchema),
 };
 

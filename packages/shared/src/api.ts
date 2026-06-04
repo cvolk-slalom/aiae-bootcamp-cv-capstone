@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PlanSchema, PlanInputsSchema, PlanLayoutSchema, PlanTimingSchema } from './plan.js';
+import { PlanSchema, PlanInputsSchema, PlanLayoutSchema, PlanTimingSchema, PlanFinalSchema } from './plan.js';
 import { PlantSchema } from './plant.js';
 
 export const HealthResponseSchema = z.object({ ok: z.literal(true) });
@@ -74,3 +74,6 @@ export const UpdateTimingRequestSchema = z.object({
   ),
 });
 export type UpdateTimingRequest = z.infer<typeof UpdateTimingRequestSchema>;
+
+export const FinalSummarySchema = PlanFinalSchema;
+export type FinalSummary = z.infer<typeof FinalSummarySchema>;

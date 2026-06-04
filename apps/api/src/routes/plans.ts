@@ -7,6 +7,7 @@ import {
   UpdateLayoutRequestSchema,
   UpdateTimingRequestSchema,
   newId,
+  renderPlanMarkdown,
   type Plan,
 } from '@gpb/shared';
 import { PlansRepo } from '../db/plans-repo.js';
@@ -201,5 +202,30 @@ export const plansRoutes: FastifyPluginAsync = async (app) => {
     };
     repo.update(updated);
     return updated;
+  });
+
+  app.post('/plans/:id/final', async (req, reply) => {
+    const { id } = ParamsSchema.parse(req.params);
+    const existing = repo.get(id);
+    if (!existing) return reply.code(404).send({ error: 'not found' });
+
+    const summaryMarkdown = renderPlanMarkdown(existing, app.plants);
+    const updated: Plan = {
+      ...existing,
+      final: { summaryMarkdown },
+      step: 'final',
+      updatedAt: new Date().toISOString(),
+    };
+    repo.update(updated);
+    return updated;
+  });
+
+  app.get('/plans/:id/final.md', async (req, reply) => {
+    const { id } = ParamsSchema.parse(req.params);
+    const plan = repo.get(id);
+    if (!plan) return reply.code(404).send({ error: 'not found' });
+    const md = plan.final?.summaryMarkdown ?? renderPlanMarkdown(plan, app.plants);
+    reply.header('content-type', 'text/markdown; charset=utf-8');
+    return reply.send(md);
   });
 };

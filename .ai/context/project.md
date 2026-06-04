@@ -24,4 +24,4 @@ Full MVP definition: [.ai/requirements/mvp.md](../requirements/mvp.md).
 - **Builders:** AI agents (Copilot, Claude, Codex) following [.ai/workflows/](../workflows/).
 
 ## Current status
-F006 done — Frost & window timing (pure UTC date math, editable table). **Next:** F007 — Final plan + Markdown export.
+**MVP complete (2026-06-04).** All five wizard steps (F003–F007) shipped end-to-end with Markdown export. 42 tests passing. Next: post-MVP polish (TBD).

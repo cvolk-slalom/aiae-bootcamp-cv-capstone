@@ -1,0 +1,17 @@
+.section { display: flex; flex-direction: column; gap: 1rem; max-width: 960px; }
+.actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.actions button, .actions a {
+  padding: 0.55rem 1rem; font-size: 1rem; cursor: pointer;
+  border: 1px solid #ccc; background: #fafafa; color: #222;
+  text-decoration: none; border-radius: 4px;
+}
+.actions button:hover, .actions a:hover { background: #f0f0f0; }
+.source {
+  background: #f7f7f7; border: 1px solid #ddd; padding: 1rem;
+  border-radius: 4px; overflow: auto; max-height: 60vh;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem; white-space: pre; line-height: 1.4;
+}
+.errors { color: #b00020; font-size: 0.9rem; }
+.muted { color: #888; font-size: 0.9rem; }
+.flash { color: #006400; font-size: 0.9rem; }

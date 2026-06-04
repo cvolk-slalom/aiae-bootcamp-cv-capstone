@@ -75,13 +75,15 @@ type Plant = {
 ```
 
 ## MVP acceptance (the whole product is "done" when)
-- [ ] User can create a new plan and complete all 5 steps end-to-end.
-- [ ] State persists between steps; reloading the URL resumes where they left off.
-- [ ] Companion recommender uses the plant database (not stubs).
-- [ ] Layout fills the bed without overlaps and respects spacing.
-- [ ] Timing dates are computed from `lastFrostDate` + plant data.
-- [ ] Final plan exports as Markdown.
-- [ ] Plant database has ≥ 20 plants with realistic data.
+- [x] User can create a new plan and complete all 5 steps end-to-end.
+- [x] State persists between steps; reloading the URL resumes where they left off.
+- [x] Companion recommender uses the plant database (not stubs).
+- [x] Layout fills the bed without overlaps and respects spacing.
+- [x] Timing dates are computed from `lastFrostDate` + plant data.
+- [x] Final plan exports as Markdown.
+- [x] Plant database has ≥ 20 plants with realistic data.
+
+**MVP complete (2026-06-04).** See [.ai/journal/2026-06-04.md](../journal/2026-06-04.md).
 
 ## Explicitly out of scope (do NOT build)
 - Authentication, multi-user, sharing.
