@@ -24,4 +24,4 @@ Full MVP definition: [.ai/requirements/mvp.md](../requirements/mvp.md).
 - **Builders:** AI agents (Copilot, Claude, Codex) following [.ai/workflows/](../workflows/).
 
 ## Current status
-F005 done — Bed layout (greedy packer, light filter, editable grid). **Next:** F006 — Timing.
+F006 done — Frost & window timing (pure UTC date math, editable table). **Next:** F007 — Final plan + Markdown export.

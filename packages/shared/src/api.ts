@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PlanSchema, PlanInputsSchema, PlanLayoutSchema } from './plan.js';
+import { PlanSchema, PlanInputsSchema, PlanLayoutSchema, PlanTimingSchema } from './plan.js';
 import { PlantSchema } from './plant.js';
 
 export const HealthResponseSchema = z.object({ ok: z.literal(true) });
@@ -52,3 +52,25 @@ export type LayoutResult = z.infer<typeof LayoutResultSchema>;
 
 export const UpdateLayoutRequestSchema = PlanLayoutSchema;
 export type UpdateLayoutRequest = z.infer<typeof UpdateLayoutRequestSchema>;
+
+export const TimingResultSchema = PlanTimingSchema;
+export type TimingResult = z.infer<typeof TimingResultSchema>;
+
+const IsoDate = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'must be ISO date YYYY-MM-DD')
+  .optional();
+
+export const UpdateTimingRequestSchema = z.object({
+  perPlant: z.array(
+    z.object({
+      plantId: z.string().min(1),
+      startIndoorsOn: IsoDate,
+      directSowOn: IsoDate,
+      transplantOn: IsoDate,
+      harvestStart: IsoDate,
+      harvestEnd: IsoDate,
+    }),
+  ),
+});
+export type UpdateTimingRequest = z.infer<typeof UpdateTimingRequestSchema>;

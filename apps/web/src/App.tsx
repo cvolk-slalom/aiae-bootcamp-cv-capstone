@@ -3,6 +3,7 @@ import { HomeScreen } from './screens/Home/Home.js';
 import { InputsScreen } from './screens/Inputs/Inputs.js';
 import { CompanionsScreen } from './screens/Companions/Companions.js';
 import { LayoutScreen } from './screens/Layout/Layout.js';
+import { TimingScreen } from './screens/Timing/Timing.js';
 import styles from './App.module.css';
 
 export function App() {
@@ -19,7 +20,8 @@ export function App() {
           <Route path="/plans/:id/inputs" element={<InputsScreen />} />
           <Route path="/plans/:id/companions" element={<CompanionsScreen />} />
           <Route path="/plans/:id/layout" element={<LayoutScreen />} />
-          <Route path="/plans/:id/timing" element={<TimingPlaceholder />} />
+          <Route path="/plans/:id/timing" element={<TimingScreen />} />
+          <Route path="/plans/:id/final" element={<FinalPlaceholder />} />
           <Route path="*" element={<p>Not found.</p>} />
         </Routes>
       </main>
@@ -27,11 +29,11 @@ export function App() {
   );
 }
 
-function TimingPlaceholder() {
+function FinalPlaceholder() {
   return (
     <section>
-      <h2>Step 4 — Timing</h2>
-      <p>Coming in F006.</p>
+      <h2>Step 5 — Final plan</h2>
+      <p>Coming in F007.</p>
     </section>
   );
 }

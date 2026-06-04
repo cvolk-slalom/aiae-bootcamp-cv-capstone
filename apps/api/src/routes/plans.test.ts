@@ -222,3 +222,75 @@ describe('layout flow', () => {
     expect(patch.statusCode).toBe(400);
   });
 });
+
+describe('timing flow', () => {
+  async function seedThroughLayout(desired: string[], confirmed: string[], lastFrostDate = '2026-05-01') {
+    const create = await app.inject({ method: 'POST', url: '/plans', payload: { name: 'T' } });
+    const id = create.json().id;
+    await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/inputs`,
+      payload: {
+        zone: '7a',
+        lastFrostDate,
+        bed: { widthIn: 48, lengthIn: 96 },
+        lightHours: 8,
+        desiredPlants: desired,
+      },
+    });
+    await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/companions`,
+      payload: { confirmedPlants: confirmed },
+    });
+    const sug = await app.inject({ method: 'GET', url: `/plans/${id}/layout/suggestion` });
+    await app.inject({ method: 'PATCH', url: `/plans/${id}/layout`, payload: sug.json() });
+    return id;
+  }
+
+  it('GET /timing/suggestion matches brief acceptance for tomato', async () => {
+    const id = await seedThroughLayout(['tomato'], ['tomato']);
+    const res = await app.inject({ method: 'GET', url: `/plans/${id}/timing/suggestion` });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.perPlant[0]).toMatchObject({
+      plantId: 'tomato',
+      startIndoorsOn: '2026-03-20',
+      transplantOn: '2026-05-15',
+      harvestStart: '2026-07-29',
+      harvestEnd: '2026-08-19',
+    });
+  });
+
+  it('PATCH /timing persists and advances step to final', async () => {
+    const id = await seedThroughLayout(['tomato', 'basil'], ['tomato', 'basil']);
+    const sug = await app.inject({ method: 'GET', url: `/plans/${id}/timing/suggestion` });
+    const timing = sug.json();
+    const patch = await app.inject({ method: 'PATCH', url: `/plans/${id}/timing`, payload: timing });
+    expect(patch.statusCode).toBe(200);
+    expect(patch.json().step).toBe('final');
+    const reload = await app.inject({ method: 'GET', url: `/plans/${id}` });
+    expect(reload.json().timing.perPlant[0].plantId).toBe('tomato');
+  });
+
+  it('PATCH /timing rejects non-ISO date', async () => {
+    const id = await seedThroughLayout(['tomato'], ['tomato']);
+    const res = await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/timing`,
+      payload: { perPlant: [{ plantId: 'tomato', startIndoorsOn: 'not-a-date' }] },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('PATCH /timing rejects unknown plant id', async () => {
+    const id = await seedThroughLayout(['tomato'], ['tomato']);
+    const res = await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/timing`,
+      payload: { perPlant: [{ plantId: 'not-a-plant' }] },
+    });
+    expect(res.statusCode).toBe(400);
+    expect(res.json().errors.formErrors.join(' ')).toMatch(/not-a-plant/);
+  });
+});

@@ -1,0 +1,9 @@
+.section { display: flex; flex-direction: column; gap: 1rem; max-width: 960px; }
+.table { border-collapse: collapse; }
+.table th, .table td { border: 1px solid #ddd; padding: 0.4rem 0.6rem; text-align: left; font-size: 0.9rem; }
+.table th { background: #f5f5f5; }
+.table input { font: inherit; }
+.actions { display: flex; gap: 0.75rem; }
+.actions button { padding: 0.55rem 1rem; font-size: 1rem; cursor: pointer; }
+.errors { color: #b00020; font-size: 0.9rem; padding-left: 1.25rem; }
+.muted { color: #888; }

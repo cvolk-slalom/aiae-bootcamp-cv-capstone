@@ -5,12 +5,14 @@ import {
   UpdateInputsRequestSchema,
   UpdateCompanionsRequestSchema,
   UpdateLayoutRequestSchema,
+  UpdateTimingRequestSchema,
   newId,
   type Plan,
 } from '@gpb/shared';
 import { PlansRepo } from '../db/plans-repo.js';
 import { buildCompanionsResult } from '../services/companions.js';
 import { computeLayout, validateLayout } from '../services/layout.js';
+import { computeTiming } from '../services/timing.js';
 
 const ParamsSchema = z.object({ id: z.string().min(1) });
 
@@ -149,6 +151,52 @@ export const plansRoutes: FastifyPluginAsync = async (app) => {
       ...existing,
       layout: parsed.data,
       step: 'timing',
+      updatedAt: new Date().toISOString(),
+    };
+    repo.update(updated);
+    return updated;
+  });
+
+  app.get('/plans/:id/timing/suggestion', async (req, reply) => {
+    const { id } = ParamsSchema.parse(req.params);
+    const plan = repo.get(id);
+    if (!plan) return reply.code(404).send({ error: 'not found' });
+    if (!plan.inputs || !plan.companions) {
+      return reply
+        .code(400)
+        .send({ errors: { formErrors: ['inputs and companions must be set first'], fieldErrors: {} } });
+    }
+    return computeTiming(plan.inputs.lastFrostDate, plan.companions.confirmedPlants, app.plants);
+  });
+
+  app.patch('/plans/:id/timing', async (req, reply) => {
+    const { id } = ParamsSchema.parse(req.params);
+    const parsed = UpdateTimingRequestSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ errors: parsed.error.flatten() });
+
+    const existing = repo.get(id);
+    if (!existing) return reply.code(404).send({ error: 'not found' });
+    if (!existing.companions) {
+      return reply
+        .code(400)
+        .send({ errors: { formErrors: ['companions must be set first'], fieldErrors: {} } });
+    }
+
+    const confirmed = new Set(existing.companions.confirmedPlants);
+    const unknown = parsed.data.perPlant.map((r) => r.plantId).filter((pid) => !confirmed.has(pid));
+    if (unknown.length > 0) {
+      return reply.code(400).send({
+        errors: {
+          formErrors: [`unknown plant id(s) in timing: ${unknown.join(', ')}`],
+          fieldErrors: {},
+        },
+      });
+    }
+
+    const updated: Plan = {
+      ...existing,
+      timing: parsed.data,
+      step: 'final',
       updatedAt: new Date().toISOString(),
     };
     repo.update(updated);
