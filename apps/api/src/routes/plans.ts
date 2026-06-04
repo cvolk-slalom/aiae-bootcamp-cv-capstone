@@ -4,11 +4,13 @@ import {
   CreatePlanRequestSchema,
   UpdateInputsRequestSchema,
   UpdateCompanionsRequestSchema,
+  UpdateLayoutRequestSchema,
   newId,
   type Plan,
 } from '@gpb/shared';
 import { PlansRepo } from '../db/plans-repo.js';
 import { buildCompanionsResult } from '../services/companions.js';
+import { computeLayout, validateLayout } from '../services/layout.js';
 
 const ParamsSchema = z.object({ id: z.string().min(1) });
 
@@ -102,6 +104,51 @@ export const plansRoutes: FastifyPluginAsync = async (app) => {
         confirmedPlants: parsed.data.confirmedPlants,
       },
       step: 'layout',
+      updatedAt: new Date().toISOString(),
+    };
+    repo.update(updated);
+    return updated;
+  });
+
+  app.get('/plans/:id/layout/suggestion', async (req, reply) => {
+    const { id } = ParamsSchema.parse(req.params);
+    const plan = repo.get(id);
+    if (!plan) return reply.code(404).send({ error: 'not found' });
+    if (!plan.inputs || !plan.companions) {
+      return reply
+        .code(400)
+        .send({ errors: { formErrors: ['inputs and companions must be set first'], fieldErrors: {} } });
+    }
+    return computeLayout(
+      {
+        bed: plan.inputs.bed,
+        confirmedPlants: plan.companions.confirmedPlants,
+        lightHours: plan.inputs.lightHours,
+      },
+      app.plants,
+    );
+  });
+
+  app.patch('/plans/:id/layout', async (req, reply) => {
+    const { id } = ParamsSchema.parse(req.params);
+    const parsed = UpdateLayoutRequestSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ errors: parsed.error.flatten() });
+
+    const existing = repo.get(id);
+    if (!existing) return reply.code(404).send({ error: 'not found' });
+    if (!existing.inputs || !existing.companions) {
+      return reply
+        .code(400)
+        .send({ errors: { formErrors: ['inputs and companions must be set first'], fieldErrors: {} } });
+    }
+
+    const err = validateLayout(parsed.data, existing.inputs.bed, existing.companions.confirmedPlants);
+    if (err) return reply.code(400).send({ errors: err });
+
+    const updated: Plan = {
+      ...existing,
+      layout: parsed.data,
+      step: 'timing',
       updatedAt: new Date().toISOString(),
     };
     repo.update(updated);

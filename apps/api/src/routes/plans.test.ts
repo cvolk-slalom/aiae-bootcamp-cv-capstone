@@ -160,3 +160,65 @@ describe('companions flow', () => {
     expect(res.statusCode).toBe(400);
   });
 });
+
+describe('layout flow', () => {
+  async function seedThroughCompanions(
+    desired: string[],
+    confirmed: string[],
+    bed = { widthIn: 48, lengthIn: 96 },
+    lightHours = 8,
+  ) {
+    const create = await app.inject({ method: 'POST', url: '/plans', payload: { name: 'L' } });
+    const id = create.json().id;
+    await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/inputs`,
+      payload: { zone: '7a', lastFrostDate: '2026-04-15', bed, lightHours, desiredPlants: desired },
+    });
+    await app.inject({
+      method: 'PATCH',
+      url: `/plans/${id}/companions`,
+      payload: { confirmedPlants: confirmed },
+    });
+    return id;
+  }
+
+  it('GET /layout/suggestion returns grid covering the bed', async () => {
+    const id = await seedThroughCompanions(['tomato', 'basil'], ['tomato', 'basil', 'carrot']);
+    const res = await app.inject({ method: 'GET', url: `/plans/${id}/layout/suggestion` });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.grid).toHaveLength(body.cols * body.rows);
+    expect(body.cellSizeIn).toBeGreaterThanOrEqual(6);
+  });
+
+  it('PATCH /layout persists and advances step to timing', async () => {
+    const id = await seedThroughCompanions(['tomato', 'basil'], ['tomato', 'basil']);
+    const sug = await app.inject({ method: 'GET', url: `/plans/${id}/layout/suggestion` });
+    const layout = sug.json();
+    const patch = await app.inject({ method: 'PATCH', url: `/plans/${id}/layout`, payload: layout });
+    expect(patch.statusCode).toBe(200);
+    expect(patch.json().step).toBe('timing');
+    const reload = await app.inject({ method: 'GET', url: `/plans/${id}` });
+    expect(reload.json().layout.cols).toBe(layout.cols);
+  });
+
+  it('PATCH /layout rejects unknown plant ids in grid', async () => {
+    const id = await seedThroughCompanions(['tomato'], ['tomato']);
+    const sug = await app.inject({ method: 'GET', url: `/plans/${id}/layout/suggestion` });
+    const layout = sug.json();
+    layout.grid[0].plantId = 'not-a-plant';
+    const patch = await app.inject({ method: 'PATCH', url: `/plans/${id}/layout`, payload: layout });
+    expect(patch.statusCode).toBe(400);
+    expect(patch.json().errors.formErrors.join(' ')).toMatch(/not-a-plant/);
+  });
+
+  it('PATCH /layout rejects dimension mismatch', async () => {
+    const id = await seedThroughCompanions(['tomato'], ['tomato']);
+    const sug = await app.inject({ method: 'GET', url: `/plans/${id}/layout/suggestion` });
+    const layout = sug.json();
+    layout.cols = layout.cols + 1;
+    const patch = await app.inject({ method: 'PATCH', url: `/plans/${id}/layout`, payload: layout });
+    expect(patch.statusCode).toBe(400);
+  });
+});

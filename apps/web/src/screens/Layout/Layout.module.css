@@ -1,0 +1,11 @@
+.section { display: flex; flex-direction: column; gap: 1rem; max-width: 960px; }
+.meta { color: #555; font-size: 0.9rem; }
+.grid { display: grid; gap: 2px; background: #ccc; padding: 2px; width: max-content; }
+.cell { background: #fff; padding: 0.25rem; min-width: 7rem; }
+.cell select { width: 100%; font-size: 0.85rem; }
+.unplaced { border: 1px solid #ddd; padding: 0.5rem 0.75rem; }
+.unplaced h3 { margin: 0 0 0.4rem 0; font-size: 1rem; }
+.unplaced ul { margin: 0; padding-left: 1.25rem; }
+.actions { display: flex; gap: 0.75rem; }
+.actions button { padding: 0.55rem 1rem; font-size: 1rem; cursor: pointer; }
+.errors { color: #b00020; font-size: 0.9rem; padding-left: 1.25rem; }

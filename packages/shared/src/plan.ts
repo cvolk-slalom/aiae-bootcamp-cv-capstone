@@ -24,6 +24,8 @@ export const PlanCompanionsSchema = z.object({
 
 export const PlanLayoutSchema = z.object({
   cellSizeIn: z.number().positive(),
+  cols: z.number().int().nonnegative(),
+  rows: z.number().int().nonnegative(),
   grid: z.array(
     z.object({
       x: z.number().int().nonnegative(),
